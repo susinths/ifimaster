@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#Bash script to run tests and record resulsts + system resource usage
+#Bash script to run tests and record resulsts + system resource usage #start server with 'while true; do ib_send_bw   -m 4096; done'
 IF="ens2"
 IP_SRV="192.168.100.1"
 OUTFILE="/root/scripts/ib_send_bw.txt"
@@ -9,12 +9,11 @@ RUNTIME="90" # in seconds
 NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="40"
 HOSTNAME="c8"
-TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_$HOSTNAME_roce.txt"
+TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_roce.txt"
 
 #while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done
 #echo -e "Timestamp\t CPULoad1m CPULoad5m CPULoad5m NetDevRX NetDevTX IRQens2-0 IRQens2-1 IRQens2-2 IRQens2-3 IRQens2-4 IRQens2-5 IRQens2-6 IRQens2-7 user nice system idle iowait irq softirq steal guest guest_nice   " > $TESTFILENAME 
-echo -e "StartTime,StartEpoch,BW,EndTime,EndEpoch,CPULoad1m,CPULoad5m,CPULoad5m,NetDevRX,NetDevTX,IRQens2-0,IRQens2-1,IRQens2-2,IRQens2-3,IRQens2-4,IRQens2-5,IRQens2-6,IRQens2-7,user,nice,system,idle,iowait
-,irq,softirq,steal,guest,guest_nice,MemTotal,MemFree,MemAvailable,Buffers,Cached" > $TESTFILENAME
+echo -e "StartTime,StartEpoch,BW,EndTime,EndEpoch,CPULoad1m,CPULoad5m,CPULoad5m,NetDevRX,NetDevTX,IRQens2-0,IRQens2-1,IRQens2-2,IRQens2-3,IRQens2-4,IRQens2-5,IRQens2-6,IRQens2-7,user,nice,system,idle,iowait,irq,softirq,steal,guest,guest_nice,MemTotal,MemFree,MemAvailable,Buffers,Cached" > $TESTFILENAME
 while true
 do 
 StartTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
@@ -42,22 +41,11 @@ MemAvailable=$(echo  -n $(awk '/^MemAvailable/ {print $2}'  /proc/meminfo))
 Buffers=$(echo  -n $(awk '/^Buffers/ {print $2}'  /proc/meminfo))
 Cached=$(echo  -n $(awk '/^Cached/ {print $2}'  /proc/meminfo))
 echo -e "${StartTime},${StartEpoch},${BW},${EndTime},${EndEpoch},${CPULoad},${NetDevRX},${NetDevTX},${IRQ0},${IRQ1},${IRQ2},${IRQ3},${IRQ4},${IRQ5},${IRQ6},${IRQ7},${ProcStats},${MemTotal},${MemFree},${MemAvailable},${Buffers},${Cached}"  >> $TESTFILENAME
+sleep 30
 done
 
 
-##TODO store the values in variables and then at the end write to the file
-# Give 1s for the server to re-spawn
-sleep 1
-
-#    sleep 30
 
 
 
 
-
-#IRQs awk '/.*0$/ {print $2}  ' /proc/interrupts
-
-#TODO add capture of cat /proc/net/dev | awk "/${IF}:/ {print \$1},${\$2},${\$10}"
-
-
-#Start the "server" with 'while true; do ib_send_bw -D 90  -m 4096; done
