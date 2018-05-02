@@ -10,7 +10,9 @@ MTU="9000"
 NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="40"
 HOSTNAME="c8"
-TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_${MTU}.txt"
+WINSIZE="300k" # in KB
+TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}.txt"
+
 
 #while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done
 #echo -e "Timestamp\t CPULoad1m CPULoad5m CPULoad5m NetDevRX NetDevTX IRQens2-0 IRQens2-1 IRQens2-2 IRQens2-3 IRQens2-4 IRQens2-5 IRQens2-6 IRQens2-7 user nice system idle iowait irq softirq steal guest guest_nice   " > $TESTFILENAME 
@@ -20,7 +22,7 @@ do
 StartTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
 StartEpoch=$(echo -n "$(date +%s.%N)")
 #echo -n "$(ib_send_bw   -m 4096 -d mlx4_0 -i 1 -F --report_gbits  $IP_SRV --output=bandwidth)," >> $TESTFILENAME  
-BW=$(echo -n $(iperf -c $IP_SRV -t 30  -y C | awk -F',' '{print $9}'))
+BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE}  -y C | awk -F',' '{print $9}'))
 CPULoad=$(echo -n  $(awk '{print $1 "," $2 "," $3}' /proc/loadavg))
 ##We are done with running the command
 EndTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
@@ -47,7 +49,7 @@ done
 
 ##TODO store the values in variables and then at the end write to the file
 # Give 1s for the server to re-spawn
-sleep 1
+#sleep 1
 
 #    sleep 30
 
