@@ -10,7 +10,9 @@ MTU="9000"
 NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="40"
 HOSTNAME="c7"
-TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_${MTU}.txt"
+WINSIZE="300k"
+TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}.txt"
+
 
 #while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done   
 echo -e "StartTime,StartEpoch,EndTime,EndEpoch,CPULoad1m,CPULoad5m,CPULoad5m,NetDevRX,NetDevTX,IRQens2-0,IRQens2-1,IRQens2-2,IRQens2-3,IRQens2-4,IRQens2-5,IRQens2-6,IRQens2-7,user,nice,system,idle,iowait,irq,softirq,steal,guest,guest_nice,MemTotal,MemFree,MemAvailable,Buffers,Cached" > $TESTFILENAME
