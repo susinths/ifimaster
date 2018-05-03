@@ -11,7 +11,8 @@ NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="40"
 HOSTNAME="c8"
 WINSIZE="300k" # in KB
-TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}.txt"
+THREADS="2"
+TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}_threads_${THREADS}.txt"
 
 
 #while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done
@@ -22,7 +23,9 @@ do
 StartTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
 StartEpoch=$(echo -n "$(date +%s.%N)")
 #echo -n "$(ib_send_bw   -m 4096 -d mlx4_0 -i 1 -F --report_gbits  $IP_SRV --output=bandwidth)," >> $TESTFILENAME  
-BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE}  -y C | awk -F',' '{print $9}'))
+#BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE} -P ${THREADS} -y C | awk -F',' '{print $9}'))
+#For P2/3/4, the output is different than for single thread!!! one line for each thread + a summary line
+BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE} -P ${THREADS} -y C | tail -n1| awk -F',' '{print $9}'))
 CPULoad=$(echo -n  $(awk '{print $1 "," $2 "," $3}' /proc/loadavg))
 ##We are done with running the command
 EndTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
