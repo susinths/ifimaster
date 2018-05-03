@@ -11,7 +11,7 @@ NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="40"
 HOSTNAME="c8"
 WINSIZE="300k" # in KB
-THREADS="2"
+THREADS="1"
 TESTFILENAME="$(date +%F_%H-%M-%S)_c8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}_threads_${THREADS}.txt"
 
 
