@@ -12,7 +12,7 @@ SLEEP="30"
 HOSTNAME="c8"
 WINSIZE="200k" # in KB
 THREADS="1"
-TESTFILENAME="$(date +%F_%H-%M-%S)_vmc8toc7_${HOSTNAME}_iperf_mtu${MTU}_win${WINSIZE}_threads_${THREADS}.txt"
+TESTFILENAME="$(date +%F_%H-%M-%S)_vmc8toc7_${HOSTNAME}_roce.txt"
 
 
 #while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done
