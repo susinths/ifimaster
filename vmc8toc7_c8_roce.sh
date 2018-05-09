@@ -1,22 +1,17 @@
 #! /usr/bin/env bash
-#Bash script to run tests and record resulsts + system resource usage
+#Bash script to run RDMA tests and record results + system resource usage
 IF="ens2"
 IP_SRV="192.168.100.1"
 OUTFILE="/root/scripts/ib_send_bw.txt"
-RUNTIME="30" # in seconds                                                                                                                                                                                        
-MTU="9900"                           
-#PERFCMD="perf stat -e  cpu-migrations,context-switches,task-clock,cycles,instructions,cache-references,cache-misses"
-#RPERFCMD="rperf -c $IP_SERVER -p 5001 -H -G pw -l 500M -i 2 -t $RUNTIME"
+RUNTIME="30" # in seconds  
+MTU="4200"
 NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
 SLEEP="30"
 HOSTNAME="c8"
 WINSIZE="200k" # in KB
 THREADS="1"
-TESTFILENAME="$(date +%F_%H-%M-%S)_vmc8toc7_${HOSTNAME}_roce.txt"
-
-
-#while true; do echo -n "$(rperf   -c 192.168.100.1 -p 5001 -H -G pw -l 500M -y C) " >> test1_bm_to_bm.txt && cat /proc/loadavg >> test1_bm_to_bm.txt; done
-#echo -e "Timestamp\t CPULoad1m CPULoad5m CPULoad5m NetDevRX NetDevTX IRQens2-0 IRQens2-1 IRQens2-2 IRQens2-3 IRQens2-4 IRQens2-5 IRQens2-6 IRQens2-7 user nice system idle iowait irq softirq steal guest guest_nice   " > $TESTFILENAME 
+IOVIRT="SR-IOV"
+TESTFILENAME="$(date +%F_%H-%M-%S)_vmc8toc7_${HOSTNAME}_roce_mtu${MTU}_${IOVIRT}.txt"
 echo -e "StartTime,StartEpoch,EndTime,EndEpoch,CPULoad1m,CPULoad5m,CPULoad5m,NetDevRX,NetDevTX,IRQens2-0,IRQens2-1,IRQens2-2,IRQens2-3,IRQens2-4,IRQens2-5,IRQens2-6,IRQens2-7,user,nice,system,idle,iowait,irq,softirq,steal,guest,guest_nice,MemTotal,MemFree,MemAvailable,Buffers,Cached" > $TESTFILENAME
 while true
 do 
@@ -24,7 +19,6 @@ StartTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
 StartEpoch=$(echo -n "$(date +%s.%N)")
 #echo -n "$(ib_send_bw   -m 4096 -d mlx4_0 -i 1 -F --report_gbits  $IP_SRV --output=bandwidth)," >> $TESTFILENAME  
 #BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE} -P ${THREADS} -y C | awk -F',' '{print $9}'))
-#For P2/3/4, the output is different than for single thread!!! one line for each thread + a summary line
 #BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE} -P ${THREADS} -y C | tail -n1| awk -F',' '{print $9}'))
 CPULoad=$(echo -n  $(awk '{print $1 "," $2 "," $3}' /proc/loadavg))
 ##We are done with running the command
@@ -49,21 +43,3 @@ Cached=$(echo  -n $(awk '/^Cached/ {print $2}'  /proc/meminfo))
 echo -e "${StartTime},${StartEpoch},${EndTime},${EndEpoch},${CPULoad},${NetDevRX},${NetDevTX},${IRQ0},${IRQ1},${IRQ2},${IRQ3},${IRQ4},${IRQ5},${IRQ6},${IRQ7},${ProcStats},${MemTotal},${MemFree},${MemAvailable},${Buffers},${Cached}"  >> $TESTFILENAME
 sleep ${SLEEP}
 done
-
-
-##TODO store the values in variables and then at the end write to the file
-# Give 1s for the server to re-spawn
-#sleep 1
-
-#    sleep 30
-
-
-
-
-
-#IRQs awk '/.*0$/ {print $2}  ' /proc/interrupts
-
-#TODO add capture of cat /proc/net/dev | awk "/${IF}:/ {print \$1},${\$2},${\$10}"
-
-
-#Start the "server" with 'while true; do ib_send_bw -D 90  -m 4096; done
