@@ -6,7 +6,8 @@ OUTFILE="/root/scripts/ib_send_bw.txt"
 RUNTIME="90" # in seconds                                                                                                                                                     
 MTU="4200"                       
 NETSTAT='cat /proc/net/dev | awk "/${IF}:/ {print \$1,\$2,\$10}"'
-SLEEP="40"
+SLEEP="30"
+TESTTIME="30"
 HOSTNAME="vmc8"
 WINSIZE="default" # in KB
 THREADS="1"
@@ -20,7 +21,7 @@ while true
 do 
 StartTime=$(echo -n "$(date +%F_%H-%M-%S.%N)")
 StartEpoch=$(echo -n "$(date +%s.%N)")
-BW=$(echo -n "$(ib_send_bw   -m 4096 -d mlx4_0 -i 1 -F --report_gbits  $IP_SRV --output=bandwidth)")
+BW=$(echo -n "$(ib_send_bw -D ${TESTTIME}  -m 4096 -d mlx4_0 -i 1 -F --report_gbits  $IP_SRV --output=bandwidth)")
 #BW=$(echo -n $(iperf -c $IP_SRV -t 30  -y C | awk -F',' '{print $9}'))
 #For P2/3/4, the output is different than for single thread!!! one line for each thread + a summary line
 #BW=$(echo -n $(iperf -c $IP_SRV -t 30 -w ${WINSIZE} -P ${THREADS} -y C | tail -n1| awk -F',' '{print $9}'))
